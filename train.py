@@ -49,8 +49,11 @@ if __name__ == "__main__":
         ''' Hit rate at K. Ratio of predictions where the correct label is in the top K most probable classes.
         '''
         y = dtrain.get_label()
-        y_in_top_k_classes = predt[np.isin(y, predt.argsort(axis=1)[:, -K:])]
-        return f'Hit_rate_at_{K}', float(len(y_in_top_k_classes) / len(y))
+        top_k_preds = predt.argsort(axis=1)[:, -K:]
+        hits_mask = [(y[i] in top_k_preds[i]) for i in range(len(y))]
+        num_hits = len(y[hits_mask])
+        hit_rate_at_k = float(num_hits / len(y))
+        return f'hit_rate_at_{K}', hit_rate_at_k
 
     xgboost_train_params = {
         "disable_default_eval_metric": 1,
